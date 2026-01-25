@@ -20,8 +20,10 @@ func handlerValidate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valid := validResponse{
-		Valid: true,
+	cleanedBody := checkBadWord(params.Body)
+
+	cleaned := cleanedResponse{
+		Cleaned_body: cleanedBody,
 	}
-	respondWithJSON(w, 200, valid)
+	respondWithJSON(w, 200, cleaned)
 }

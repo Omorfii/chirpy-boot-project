@@ -12,10 +12,10 @@ type errorResponse struct {
 	Error string `json:"error"`
 }
 
-type validResponse struct {
-	Valid bool `json:"valid"`
-}
-
 type parameters struct {
 	Body string `json:"body"`
+}
+
+type cleanedResponse struct {
+	Cleaned_body string `json:"cleaned_body"`
 }
