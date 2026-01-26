@@ -19,12 +19,9 @@ type errorResponse struct {
 }
 
 type parameters struct {
-	Body  string `json:"body"`
-	Email string `json:"email"`
-}
-
-type cleanedResponse struct {
-	Cleaned_body string `json:"cleaned_body"`
+	Body    string `json:"body"`
+	Email   string `json:"email"`
+	User_id string `json:"user_id"`
 }
 
 type User struct {
@@ -32,4 +29,12 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
+}
+
+type Chirp struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Body      string    `json:"body"`
+	User_id   uuid.UUID `json:"user_id"`
 }
