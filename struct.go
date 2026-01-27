@@ -19,9 +19,10 @@ type errorResponse struct {
 }
 
 type parameters struct {
-	Body    string `json:"body"`
-	Email   string `json:"email"`
-	User_id string `json:"user_id"`
+	Body     string `json:"body"`
+	Email    string `json:"email"`
+	User_id  string `json:"user_id"`
+	Password string `json:"password"`
 }
 
 type User struct {
