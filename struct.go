@@ -12,6 +12,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	db             *database.Queries
 	platform       string
+	secret         string
 }
 
 type errorResponse struct {
@@ -19,10 +20,11 @@ type errorResponse struct {
 }
 
 type parameters struct {
-	Body     string `json:"body"`
-	Email    string `json:"email"`
-	User_id  string `json:"user_id"`
-	Password string `json:"password"`
+	Body               string    `json:"body"`
+	Email              string    `json:"email"`
+	User_id            uuid.UUID `json:"user_id"`
+	Password           string    `json:"password"`
+	Expires_in_seconds int       `jspn:"expires_in_seconds"`
 }
 
 type User struct {
@@ -30,6 +32,7 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
+	Token     string    `json:"token"`
 }
 
 type Chirp struct {

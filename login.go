@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/Omorfii/chirpy-boot-project/internal/auth"
 )
 
-func (cgf *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
@@ -17,7 +18,7 @@ func (cgf *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDb, err := cgf.db.GetUserFromEmail(r.Context(), params.Email)
+	userDb, err := cfg.db.GetUserFromEmail(r.Context(), params.Email)
 	if err != nil {
 		respondWithError(w, 401, "Incorrect email or password")
 		return
@@ -29,11 +30,25 @@ func (cgf *apiConfig) handlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	expire := 3600
+
+	if params.Expires_in_seconds != 0 && params.Expires_in_seconds < 3600 {
+		expire = params.Expires_in_seconds
+	}
+
+	duration := time.Duration(expire) * time.Second
+
+	token, err := auth.MakeJWT(userDb.ID, cfg.secret, duration)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "error trying to make the token")
+	}
+
 	user := User{
 		ID:        userDb.ID,
 		CreatedAt: userDb.CreatedAt,
 		UpdatedAt: userDb.UpdatedAt,
 		Email:     userDb.Email,
+		Token:     token,
 	}
 
 	respondWithJSON(w, 200, user)

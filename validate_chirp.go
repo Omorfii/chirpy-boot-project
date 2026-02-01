@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Omorfii/chirpy-boot-project/internal/auth"
 	"github.com/Omorfii/chirpy-boot-project/internal/database"
-	"github.com/google/uuid"
 )
 
 func (cfg *apiConfig) handlerValidate(w http.ResponseWriter, r *http.Request) {
@@ -25,15 +25,20 @@ func (cfg *apiConfig) handlerValidate(w http.ResponseWriter, r *http.Request) {
 
 	cleanedBody := checkBadWord(params.Body)
 
-	id, err := uuid.Parse(params.User_id)
+	token, err := auth.GetBearerToken(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "error trying to parse the user id")
+		respondWithError(w, http.StatusInternalServerError, "error trying to get the token")
+		return
+	}
+	userId, err := auth.ValidateJWT(token, cfg.secret)
+	if err != nil {
+		respondWithError(w, 401, "token is invalid")
 		return
 	}
 
 	parameter := database.CreateChirpParams{
 		Body:   cleanedBody,
-		UserID: id,
+		UserID: userId,
 	}
 
 	chirpDb, err := cfg.db.CreateChirp(r.Context(), parameter)
