@@ -27,7 +27,7 @@ func (cfg *apiConfig) handlerValidate(w http.ResponseWriter, r *http.Request) {
 
 	token, err := auth.GetBearerToken(r.Header)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "error trying to get the token")
+		respondWithError(w, 401, "error trying to get the token")
 		return
 	}
 	userId, err := auth.ValidateJWT(token, cfg.secret)

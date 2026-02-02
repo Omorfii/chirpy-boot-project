@@ -21,7 +21,6 @@ func (cfg *apiConfig) handlerUpdateUsers(w http.ResponseWriter, r *http.Request)
 	tokenString, err := auth.GetBearerToken(r.Header)
 	if err != nil {
 		respondWithError(w, 401, "error with the access token")
-		return
 	}
 	userId, err := auth.ValidateJWT(tokenString, cfg.secret)
 	if err != nil {
