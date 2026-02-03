@@ -85,6 +85,41 @@ func (q *Queries) GetAllChirpAsc(ctx context.Context) ([]Chirp, error) {
 	return items, nil
 }
 
+const getAllChirpAscFromUserID = `-- name: GetAllChirpAscFromUserID :many
+SELECT id, created_at, updated_at, body, user_id FROM chirps
+WHERE user_id = $1
+ORDER BY chirps.created_at ASC
+`
+
+func (q *Queries) GetAllChirpAscFromUserID(ctx context.Context, userID uuid.UUID) ([]Chirp, error) {
+	rows, err := q.db.QueryContext(ctx, getAllChirpAscFromUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Chirp
+	for rows.Next() {
+		var i Chirp
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Body,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getChirpFromID = `-- name: GetChirpFromID :one
 SELECT id, created_at, updated_at, body, user_id FROM chirps
 WHERE id = $1

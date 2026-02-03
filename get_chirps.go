@@ -2,17 +2,41 @@ package main
 
 import (
 	"net/http"
+	"sort"
 
+	"github.com/Omorfii/chirpy-boot-project/internal/database"
 	"github.com/google/uuid"
 )
 
 func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 
-	chirps, err := cfg.db.GetAllChirpAsc(r.Context())
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "failled to retrieve the chirps")
-		return
+	var chirps []database.Chirp
+	var err error
+
+	query := r.URL.Query().Get("author_id")
+
+	if query != "" {
+
+		id, err := uuid.Parse(query)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "error parsing id")
+		}
+		chirps, err = cfg.db.GetAllChirpAscFromUserID(r.Context(), id)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "failled to retrieve the chirps")
+			return
+		}
+
+	} else {
+
+		chirps, err = cfg.db.GetAllChirpAsc(r.Context())
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "failled to retrieve the chirps")
+			return
+		}
 	}
+
+	sortQuerry := r.URL.Query().Get("sort")
 
 	var chirpArray []Chirp
 
@@ -25,6 +49,10 @@ func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 			Body:      chirp.Body,
 			User_id:   chirp.UserID,
 		})
+	}
+
+	if sortQuerry == "desc" {
+		sort.Slice(chirpArray, func(i, j int) bool { return chirpArray[i].CreatedAt.After(chirpArray[j].CreatedAt) })
 	}
 
 	respondWithJSON(w, 200, chirpArray)

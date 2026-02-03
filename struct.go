@@ -13,6 +13,7 @@ type apiConfig struct {
 	db             *database.Queries
 	platform       string
 	secret         string
+	polka_key      string
 }
 
 type errorResponse struct {
@@ -33,6 +34,7 @@ type User struct {
 	Email         string    `json:"email"`
 	Token         string    `json:"token"`
 	Refresh_token string    `json:"refresh_token"`
+	Is_chirpy_red bool      `json:"is_chirpy_red"`
 }
 
 type Chirp struct {
@@ -45,4 +47,13 @@ type Chirp struct {
 
 type Token struct {
 	Token string `json:"token"`
+}
+
+type Data struct {
+	User_id uuid.UUID `json:"user_id"`
+}
+
+type Webhooks struct {
+	Event string `json:"event"`
+	Data  Data   `json:"data"`
 }
