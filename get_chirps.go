@@ -52,7 +52,9 @@ func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if sortQuerry == "desc" {
-		sort.Slice(chirpArray, func(i, j int) bool { return chirpArray[i].CreatedAt.After(chirpArray[j].CreatedAt) })
+		sort.Slice(chirpArray, func(i, j int) bool {
+			return chirpArray[i].CreatedAt.After(chirpArray[j].CreatedAt)
+		})
 	}
 
 	respondWithJSON(w, 200, chirpArray)
